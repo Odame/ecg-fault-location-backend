@@ -12,7 +12,7 @@ A python flask-based backend api for a fault location app for ecg.
  
   >> GET all poles
  
-  >> 
+  >> POST new pole
  
   > __`/poles/<int:pole_id>`__
  
