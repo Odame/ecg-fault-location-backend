@@ -1,15 +1,15 @@
 '''
 Requests associated to Poles
 '''
-from flask import jsonify, request
+from flask import jsonify, make_response, request
 from flask.views import MethodView
 
+from app import DB_SERVICE as DBService
 # from common.db_service import DBService
 from common.exceptions import DBError, EntryNotFoundError, InvalidColumnsError
 from common.status_codes import (STATUS_CREATED, STATUS_INTERNAL_ERROR,
-                                 STATUS_NOT_FOUND, STATUS_OK, STATUS_INVALID_INPUT, STATUS_NO_INPUT)
-from app import DB_SERVICE as DBService
-from flask import make_response
+                                 STATUS_INVALID_INPUT, STATUS_NO_INPUT,
+                                 STATUS_NOT_FOUND, STATUS_OK)
 
 
 class PolesAPI(MethodView):

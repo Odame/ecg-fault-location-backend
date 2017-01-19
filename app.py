@@ -16,8 +16,8 @@ from common.status_codes import STATUS_INTERNAL_ERROR
 from common.db_service import DBService as _DBService
 
 
-APP = Flask(__name__)
-APP.config.from_object(config)
+app = Flask(__name__)
+app.config.from_object(config)
 
 
 def get_db_connection():
@@ -25,11 +25,11 @@ def get_db_connection():
     Create a new database connection if one doesn't exist already
     and return it.
     '''
-    with APP.app_context():
+    with app.app_context():
         _db_connection = getattr(g, '_db_connection', None)
         if _db_connection is None:
             try:
-                if APP.config['DEBUG'] is True:
+                if app.config['DEBUG'] is True:
                     # we are in debug mode, so we connect to the sqlite db file
                     _db_connection = connect_sqlite('sqlite.db')
                 else:
@@ -49,7 +49,7 @@ DB_CONNECTION = LocalProxy(get_db_connection)
 # Create a DBService and make it a local proxy
 # A local proxy can be accessed safely across multiple
 # threads in a single process
-DB_SERVICE = _DBService(DB_CONNECTION, 'SQLITE' if APP.config['DEBUG'] else 'POSTGRESQL')
+DB_SERVICE = _DBService(DB_CONNECTION, 'SQLITE' if app.config['DEBUG'] else 'POSTGRESQL')
 
 
 def register_api(view, endpoint, url, key='id', key_type='int'):
@@ -61,10 +61,10 @@ def register_api(view, endpoint, url, key='id', key_type='int'):
     url/<pk_type:pk>      {GET PUT DELETE}
     '''
     view_func = view.as_view(endpoint)
-    APP.add_url_rule(url, defaults={key: None},
+    app.add_url_rule(url, defaults={key: None},
                      view_func=view_func, methods=['GET', ])
-    APP.add_url_rule(url, view_func=view_func, methods=['POST', ])
-    APP.add_url_rule('%s/<%s:%s>' % (url, key_type, key), view_func=view_func,
+    app.add_url_rule(url, view_func=view_func, methods=['POST', ])
+    app.add_url_rule('%s/<%s:%s>' % (url, key_type, key), view_func=view_func,
                      methods=['GET', 'PUT', 'DELETE'])
 
 
@@ -75,7 +75,7 @@ register_api(UsersAPI, 'users_api', '/users', key='user_id')
 register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
 
 
-# @APP.teardown_request
+# @app.teardown_request
 # def teardown_db_connection(exception):
 #     _db_connection = getattr(g, '_db_connection', None)
 #     if _db_connection:
@@ -84,4 +84,4 @@ register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
 
 # we now actually start the app
 if __name__ == '__main__':
-    APP.run()
+    app.run()

@@ -5,8 +5,6 @@ from logging import error as log_error
 
 from common.exceptions import (
     DBError, EntryNotFoundError, InvalidColumnsError, InvalidTableError)
-# from app import DB_CONNECTION as db_connection
-# from flask import g
 
 
 class DBService(object):
