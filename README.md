@@ -1,5 +1,5 @@
 # ecg-fault-location-backend
-A python flask-based backend for a fault location app for ecg.
+A python flask-based backend api for a fault location app for ecg.
 
 ## How to contribute
 * **Clone project**
@@ -18,12 +18,16 @@ A python flask-based backend for a fault location app for ecg.
 
 ```
  set FLASK_APP=app.py
- 
+
  flask run
 ```
- 
+
 ## Tests
- 
+
  ```
   python test.py
  ```
+
+## TODO
+ 
+ * Add authentication for the api
