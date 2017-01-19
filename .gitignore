@@ -1,6 +1,7 @@
 venv
-vscode
+.vscode
 **.pyc
 *.db-journal
-*.db_model.architect
-*.db_model.architect~
+*.architect
+*.architect~
+debug_app.py
