@@ -1,3 +1,6 @@
 venv
 vscode
 **.pyc
+*.db-journal
+*.db_model.architect
+*.db_model.architect~
