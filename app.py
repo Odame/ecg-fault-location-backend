@@ -39,7 +39,7 @@ def get_db_connection():
                     # variable
                     _db_connection = connect_postgresql(
                         env.get('DATABASE_URL'), cursor_factory=RealDictCursor)
-                    log_info(
+                    log_error(
                         "**********\nCONNECTED TO HEROKU POSTGRES DATABASE\n**********")
             except OperationalError as error:
                 log_error('app.py >> get_db_connection(): ' + error.message)
@@ -84,6 +84,7 @@ register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
 def teardown_db_connection(exception):
     _db_connection = getattr(g, '_db_connection', None)
     if _db_connection:
+        log_error("DATABASE CONNECTION CLOSED")
         _db_connection.close()
 
 
