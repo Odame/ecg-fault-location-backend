@@ -53,7 +53,7 @@ DB_CONNECTION = LocalProxy(get_db_connection)
 # A local proxy can be accessed safely across multiple
 # threads in a single process
 DB_SERVICE = _DBService(
-    DB_CONNECTION, 'SQLITE' if app.config['DEBUG'] else 'POSTGRESQL'
+    get_db_connection(), 'SQLITE' if app.config['DEBUG'] else 'POSTGRESQL'
 )
 
 
