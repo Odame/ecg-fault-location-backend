@@ -59,7 +59,8 @@ class PolesAPI(MethodView):
                 jsonify({'message': error.message}), STATUS_INTERNAL_ERROR
             )
         return make_response(
-            jsonify({'message': 'The pole has been added successfully', 'id': pole_id}),
+            jsonify(
+                {'message': 'The pole has been added successfully', 'id': pole_id}),
             STATUS_CREATED
         )
 
@@ -77,7 +78,8 @@ class PolesAPI(MethodView):
                                   data_id=pole_id, new_data=data)
         except EntryNotFoundError:
             return make_response(
-                jsonify({'message': 'The pole with id {} was not found'.format(pole_id)}),
+                jsonify(
+                    {'message': 'The pole with id {} was not found'.format(pole_id)}),
                 STATUS_NOT_FOUND
             )
         except InvalidColumnsError as invalid_columns_error:
@@ -90,7 +92,13 @@ class PolesAPI(MethodView):
             return make_response(
                 jsonify({'message': error.message}), STATUS_INTERNAL_ERROR
             )
-        return make_response(jsonify({'message': message}), STATUS_OK)
+        return make_response(
+            jsonify(
+                {'message': 'The pole with id {} has been updated successfully'.format(
+                    pole_id)}
+            ),
+            STATUS_OK
+        )
 
     def delete(self, pole_id):
         '''
@@ -100,7 +108,8 @@ class PolesAPI(MethodView):
             DBService.delete_data(table=self.db_table, data_id=pole_id)
         except EntryNotFoundError:
             return make_response(
-                jsonify({'message': 'The pole with id {} was not found'.format(pole_id)}),
+                jsonify(
+                    {'message': 'The pole with id {} was not found'.format(pole_id)}),
                 STATUS_NOT_FOUND
             )
         except DBError as error:
@@ -109,7 +118,8 @@ class PolesAPI(MethodView):
             )
         return make_response(
             jsonify(
-                {'message': 'The pole with id {} has been deleted successfully'.format(pole_id)}
+                {'message': 'The pole with id {} has been deleted successfully'.format(
+                    pole_id)}
             ),
             STATUS_OK
         )
