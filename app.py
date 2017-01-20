@@ -2,7 +2,7 @@
 The main entry point of the entire application
 '''
 from logging import error as log_error
-from logging import info as log_info
+# from logging import info as log_info
 from os import environ as env
 from sqlite3 import connect as connect_sqlite
 
@@ -10,7 +10,7 @@ from flask import Flask, abort, g
 from psycopg2 import connect as connect_postgresql
 from psycopg2 import OperationalError
 from psycopg2.extras import RealDictCursor
-from werkzeug.local import LocalProxy
+# from werkzeug.local import LocalProxy
 
 from common import config
 from common.status_codes import STATUS_INTERNAL_ERROR
@@ -41,7 +41,7 @@ def get_db_connection():
                     _db_connection = connect_postgresql(
                         env.get('DATABASE_URL'), cursor_factory=RealDictCursor)
                     log_error(
-                        "**********\nCONNECTED TO HEROKU POSTGRES DATABASE\n**********")
+                        "**********CONNECTED TO HEROKU POSTGRES DATABASE**********")
             except OperationalError as error:
                 log_error('app.py >> get_db_connection(): ' + error.message)
                 abort(STATUS_INTERNAL_ERROR)
@@ -85,7 +85,14 @@ register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
 def teardown_db_connection(exception):
     _db_connection = getattr(g, '_db_connection', None)
     if _db_connection:
-        log_error("DATABASE CONNECTION CLOSED")
+        log_error("DATABASE CONNECTION CLOSED >> application teardown")
+        _db_connection.close()
+
+@app.teardown_request
+def teardown_db_connec(exception):
+    _db_connection = getattr(g, '_db_connection', None)
+    if _db_connection:
+        log_error("DATABASE CONNECTION CLOSED >> request teardown")
         _db_connection.close()
 
 

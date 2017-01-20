@@ -23,8 +23,10 @@ class PolesAPI(MethodView):
         Get the data for the Pole with the specified pole_id.
         Get the data for all Poles.
         '''
+        filter_params = request.args.to_dict()
         try:
-            db_data = DBService.select_data(self.db_table, data_id=pole_id)
+            db_data = DBService.select_data(
+                self.db_table, data_id=pole_id, **filter_params)
         except EntryNotFoundError:
             return make_response(
                 jsonify(
