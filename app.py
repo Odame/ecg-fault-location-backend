@@ -33,6 +33,7 @@ def get_db_connection():
                 if app.config['DEBUG'] is True:
                     # we are in debug mode, so we connect to the sqlite db file
                     _db_connection = connect_sqlite('sqlite.db', isolation_level=None)
+                    log_error("CONNECTED TO SQLITE DATABASE")
                 else:
                     # we are in production so use the db connection
                     # parameters defined in the DATABASE_URL environmen
@@ -47,7 +48,7 @@ def get_db_connection():
             g._db_connection = _db_connection
         return _db_connection
 
-DB_CONNECTION = LocalProxy(get_db_connection)
+# DB_CONNECTION = LocalProxy(get_db_connection)
 
 # Create a DBService and make it a local proxy
 # A local proxy can be accessed safely across multiple
@@ -80,7 +81,7 @@ register_api(UsersAPI, 'users_api', '/users', key='user_id')
 register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
 
 
-@app.teardown_request
+@app.teardown_appcontext
 def teardown_db_connection(exception):
     _db_connection = getattr(g, '_db_connection', None)
     if _db_connection:
