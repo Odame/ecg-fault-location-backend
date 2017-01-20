@@ -1,12 +1,6 @@
 '''
 All custom configurations for the flask app
 '''
+from os import environ as env
 
-DATABASE = {
-    'host': '127.0.0.1',
-    'port': 3316,
-    'user': 'postgresql',
-    'password': 'password'
-}
-
-DEBUG = True
+DEBUG = True if str(env.get('FLASK_DEBUG')) == '1' else False
