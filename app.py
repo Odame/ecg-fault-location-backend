@@ -2,6 +2,7 @@
 The main entry point of the entire application
 '''
 from logging import error as log_error
+from logging import info as log_info
 from os import environ as env
 from sqlite3 import connect as connect_sqlite
 
@@ -38,6 +39,8 @@ def get_db_connection():
                     # variable
                     _db_connection = connect_postgresql(
                         env.get('DATABASE_URL'), cursor_factory=RealDictCursor)
+                    log_info(
+                        "**********\nCONNECTED TO HEROKU POSTGRES DATABASE\n**********")
             except OperationalError as error:
                 log_error('app.py >> get_db_connection(): ' + error.message)
                 abort(STATUS_INTERNAL_ERROR)
@@ -49,7 +52,8 @@ DB_CONNECTION = LocalProxy(get_db_connection)
 # Create a DBService and make it a local proxy
 # A local proxy can be accessed safely across multiple
 # threads in a single process
-DB_SERVICE = _DBService(DB_CONNECTION, 'SQLITE' if app.config['DEBUG'] else 'POSTGRESQL')
+DB_SERVICE = _DBService(DB_CONNECTION, 'SQLITE' if app.config[
+                        'DEBUG'] else 'POSTGRESQL')
 
 
 def register_api(view, endpoint, url, key='id', key_type='int'):
