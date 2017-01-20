@@ -2,6 +2,7 @@
 CRUD operations on the underlying database
 '''
 from logging import error as log_error
+from logging import info as log_info
 
 from common.exceptions import (
     DBError, EntryNotFoundError, InvalidColumnsError, InvalidTableError)
@@ -88,7 +89,7 @@ class DBService(object):
                 self.cursor.execute(insert_query, values_to_insert)
                 # get the id of the row we just inserted
                 if self.backend == DB_ENGINE_POSTGRESQL:
-                    insert_id = self.cursor.fetchone()[0]
+                    insert_id = self.cursor.fetchone().get('{}_id'.format(table))
                 elif self.backend == DB_ENGINE_SQLITE:
                     insert_id = self.cursor.lastrowid
         except Exception as error:

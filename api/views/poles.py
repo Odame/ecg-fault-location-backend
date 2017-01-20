@@ -33,7 +33,7 @@ class PolesAPI(MethodView):
             )
         except DBError as error:
             return make_response(
-                jsonify({'message': error.message}), STATUS_INTERNAL_ERROR
+                jsonify({'message': error.message}), STATUS_INVALID_INPUT
             )
         return make_response(jsonify(db_data), STATUS_OK)
 
