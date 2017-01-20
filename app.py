@@ -32,7 +32,7 @@ def get_db_connection():
             try:
                 if app.config['DEBUG'] is True:
                     # we are in debug mode, so we connect to the sqlite db file
-                    _db_connection = connect_sqlite('sqlite.db')
+                    _db_connection = connect_sqlite('sqlite.db', isolation_level=None)
                 else:
                     # we are in production so use the db connection
                     # parameters defined in the DATABASE_URL environmen
@@ -52,8 +52,9 @@ DB_CONNECTION = LocalProxy(get_db_connection)
 # Create a DBService and make it a local proxy
 # A local proxy can be accessed safely across multiple
 # threads in a single process
-DB_SERVICE = _DBService(DB_CONNECTION, 'SQLITE' if app.config[
-                        'DEBUG'] else 'POSTGRESQL')
+DB_SERVICE = _DBService(
+    DB_CONNECTION, 'SQLITE' if app.config['DEBUG'] else 'POSTGRESQL'
+)
 
 
 def register_api(view, endpoint, url, key='id', key_type='int'):
@@ -79,11 +80,11 @@ register_api(UsersAPI, 'users_api', '/users', key='user_id')
 register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
 
 
-# @app.teardown_request
-# def teardown_db_connection(exception):
-#     _db_connection = getattr(g, '_db_connection', None)
-#     if _db_connection:
-#         _db_connection.close()
+@app.teardown_request
+def teardown_db_connection(exception):
+    _db_connection = getattr(g, '_db_connection', None)
+    if _db_connection:
+        _db_connection.close()
 
 
 # we now actually start the app

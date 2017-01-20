@@ -27,7 +27,7 @@ class UsersAPI(MethodView):
         except EntryNotFoundError:
             return make_response(
                 jsonify(
-                    {'message': 'The user with id {} was not found'.format('user_id')}),
+                    {'message': 'The user with id {} was not found'.format(user_id)}),
                 STATUS_NOT_FOUND
             )
         except DBError as error:
@@ -106,3 +106,9 @@ class UsersAPI(MethodView):
             return make_response(
                 jsonify({'message': error.message}), STATUS_INTERNAL_ERROR
             )
+        return make_response(
+            jsonify(
+                {'message': 'The user with id {} has been deleted successfully'.format(user_id)},
+                STATUS_OK
+            )
+        )

@@ -33,11 +33,14 @@ class DBError(Exception):
     The error code resulting from the exception is stored in DBError.error_code
     '''
 
-    def __init__(self, table, psycopg2_error):
+    def __init__(self, table, postgres_error):
         super(DBError, self).__init__("")
-        self.message = psycopg2_error.message.replace('\n', '') if os_environ.get(
+        self.message = postgres_error.message.replace('\n', '') if os_environ.get(
             'FLASK_DEBUG') else 'Internal server db error. Actual message has been logged on server'
-        self.error_code = errorcodes.lookup(psycopg2_error.pgcode[:2])
+        try:
+            self.error_code = errorcodes.lookup(postgres_error.pgcode[:2])
+        except AttributeError:
+            self.error_code = 'Not a postgres error'
         self.table = table
 
 

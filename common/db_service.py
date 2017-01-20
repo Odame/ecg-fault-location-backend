@@ -6,6 +6,8 @@ from logging import error as log_error
 from common.exceptions import (
     DBError, EntryNotFoundError, InvalidColumnsError, InvalidTableError)
 
+DB_ENGINE_SQLITE = 'SQLITE'
+DB_ENGINE_POSTGRESQL = 'POSTGRESQL'
 
 class DBService(object):
     '''
@@ -15,10 +17,10 @@ class DBService(object):
     def __init__(self, db_connection, backend):
         self.backend = backend
         self.placeholder = None
-        if self.backend == 'POSTGRESQL':
+        if self.backend == DB_ENGINE_POSTGRESQL:
             self.placeholder = '%s'
-        elif self.backend == 'SQLITE':
-            self.placeholder = '?'        
+        elif self.backend == DB_ENGINE_SQLITE:
+            self.placeholder = '?'
         self.db_connection = db_connection
         self.cursor = db_connection.cursor()
         self.table_column_mappings = {
@@ -63,9 +65,10 @@ class DBService(object):
             INSERT INTO {table} 
                 ({columns_to_insert})
             VALUES 
-                ({values_placeholders})
-            RETURNING {table}_id
+                ({values_placeholders})             
         '''
+        if self.backend == DB_ENGINE_POSTGRESQL:
+            insert_query += ' RETURNING {table}_id '
         if not self.is_valid_table(table):
             raise InvalidTableError(table)
         columns_to_insert = ', '.join(kwargs.keys())
@@ -84,7 +87,10 @@ class DBService(object):
             with self.db_connection:  # required for auto commit/rollback
                 self.cursor.execute(insert_query, values_to_insert)
                 # get the id of the row we just inserted
-                insert_id = self.cursor.fetchone()[0]
+                if self.backend == DB_ENGINE_POSTGRESQL:
+                    insert_id = self.cursor.fetchone()[0]
+                elif self.backend == DB_ENGINE_SQLITE:
+                    insert_id = self.cursor.lastrowid
         except Exception as error:
             log_error(
                 'db_service.py >> insert_data() >> insert_query execution: ' + error.message)

@@ -28,7 +28,7 @@ class PolesAPI(MethodView):
         except EntryNotFoundError:
             return make_response(
                 jsonify(
-                    {'message': 'The pole with id {} was not found'.format('pole_id')}),
+                    {'message': 'The pole with id {} was not found'.format(pole_id)}),
                 STATUS_NOT_FOUND
             )
         except DBError as error:
@@ -107,3 +107,9 @@ class PolesAPI(MethodView):
             return make_response(
                 jsonify({'message': error.message}), STATUS_INTERNAL_ERROR
             )
+        return make_response(
+            jsonify(
+                {'message': 'The pole with id {} has been deleted successfully'.format(pole_id)}
+            ),
+            STATUS_OK
+        )
