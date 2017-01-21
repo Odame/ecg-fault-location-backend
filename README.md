@@ -1,7 +1,7 @@
 # ecg-fault-location-backend
 A python flask-based backend api for a fault location app for ecg.
 
-https://ecg-fault-location.herokuapp.com
+[https://ecg-fault-location.herokuapp.com]
 
 ## Documentation
 
@@ -15,6 +15,10 @@ https://ecg-fault-location.herokuapp.com
   >> GET all poles
  
   >> POST new pole
+  
+  >>> `/poles?pole_number=a_pole_number_here`
+  
+  >>> search poles by pole number
  
   > __`/poles/<int:pole_id>`__
  
@@ -54,3 +58,5 @@ https://ecg-fault-location.herokuapp.com
 ## TODO
  
  * Add authentication for the api
+
+[https://ecg-fault-location.herokuapp.com]: https://ecg-fault-location.herokuapp.com
