@@ -15,6 +15,10 @@ https://ecg-fault-location.herokuapp.com
   >> GET all poles
  
   >> POST new pole
+  
+  >>> `/poles?pole_number=a_pole_number_here`
+  
+  >>> search for a pole by pole number
  
   > __`/poles/<int:pole_id>`__
  
