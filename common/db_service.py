@@ -10,6 +10,7 @@ from common.exceptions import (
 DB_ENGINE_SQLITE = 'SQLITE'
 DB_ENGINE_POSTGRESQL = 'POSTGRESQL'
 
+
 class DBService(object):
     '''
     Contains functions for performing varios CRUD operations on the underlying database
@@ -77,7 +78,8 @@ class DBService(object):
         if len(invalid_columns) > 0:
             raise InvalidColumnsError(table, invalid_columns)
         values_to_insert = kwargs.values()
-        values_placeholders = ', '.join([self.placeholder] * len(values_to_insert))
+        values_placeholders = ', '.join(
+            [self.placeholder] * len(values_to_insert))
         insert_query = insert_query.format(
             table=table,
             columns_to_insert=columns_to_insert,
@@ -129,7 +131,7 @@ class DBService(object):
         update_query = update_query.format(
             table=table,
             columns_placeholders=column_value_pairs_placeholders,
-            id_placeholder = self.placeholder
+            id_placeholder=self.placeholder
         )
         # query_params: contains all the parameters that will be passed to the query during
         # execution
@@ -171,7 +173,8 @@ class DBService(object):
         '''
         can_deactivate = 'is_active' in self.get_valid_columns(table)
         query_to_execute = deactivate_query if can_deactivate else delete_query
-        query_to_execute = query_to_execute.format(table=table, id_placeholder=self.placeholder)
+        query_to_execute = query_to_execute.format(
+            table=table, id_placeholder=self.placeholder)
         query_to_execute = query_to_execute.replace('\n', '')
         try:
             with self.db_connection:  # required for auto commit/rollback
@@ -227,7 +230,8 @@ class DBService(object):
             if len(invalid_filter_columns) > 0:
                 raise InvalidColumnsError(table, invalid_filter_columns)
             placeholders = ' AND '.join(
-                ['{c}={p}'.format(c=c, p=self.placeholder) for c in filter_columns]
+                ['{c}={p}'.format(c=c, p=self.placeholder)
+                 for c in filter_columns]
             )
             select_query += ' WHERE ' + placeholders
             # if 'table' has an 'is_active' column,
@@ -255,3 +259,38 @@ class DBService(object):
             except IndexError:
                 raise EntryNotFoundError(table, data_id)
         return db_data
+
+    def search_data(self, table, column, search_key):
+        '''
+        Search through 'table' in the specified 'column' and return the
+        entries that match 'search_key'
+        '''
+        ## TODO This implementation needs more work to be done on escaping the %
+        ## character in the LIKE wildcard
+        # search_query = """
+        # SELECT * FROM {table} WHERE UPPER({column}) LIKE '%%' || {placeholder} || '%%'
+        # """
+        # search_query = search_query.format(
+        #     table=table, column=column, placeholder=self.placeholder
+        # )
+        # try:
+        #     with self.db_connection:
+        #         self.cursor.execute(search_query, str(search_key).upper())
+        #         db_data = self.cursor.fetchall()
+        # except Exception as error:
+        #     log_error(
+        #         'db_service.py >> search_data() >> search_query execution: ' + error.message)
+        #     raise DBError(table, error)
+        # return db_data
+
+        column_is_invalid = len(self.get_invalid_columns(table, [column])) > 0
+        if column_is_invalid:
+            raise InvalidColumnsError(table, [column])
+        try:
+            db_data = self.select_data(table)
+        except DBError as error:
+            raise error
+        search_key = search_key.upper()
+        matched_data = [d for d in db_data if search_key in d[column].upper()]
+        return matched_data
+
