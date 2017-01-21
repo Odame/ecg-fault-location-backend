@@ -6,7 +6,7 @@ from logging import error as log_error
 from os import environ as env
 from sqlite3 import connect as connect_sqlite
 
-from flask import Flask, abort, g
+from flask import Flask, abort, g, redirect
 from psycopg2 import connect as connect_postgresql
 from psycopg2 import OperationalError
 from psycopg2.extras import RealDictCursor
@@ -48,14 +48,14 @@ def get_db_connection():
             g._db_connection = _db_connection
         return _db_connection
 
-# DB_CONNECTION = LocalProxy(get_db_connection)
 
-# Create a DBService and make it a local proxy
-# A local proxy can be accessed safely across multiple
-# threads in a single process
 DB_SERVICE = _DBService(
     get_db_connection(), 'SQLITE' if app.config['DEBUG'] else 'POSTGRESQL'
 )
+
+
+def index():
+    return redirect(app.config['INDEX'])
 
 
 def register_api(view, endpoint, url, key='id', key_type='int'):
@@ -79,6 +79,7 @@ from api.views.poles import PolesAPI
 from api.views.users import UsersAPI
 register_api(UsersAPI, 'users_api', '/users', key='user_id')
 register_api(PolesAPI, 'poles_api', '/poles', key='pole_id')
+app.add_url_rule('/', 'index', index)
 
 
 @app.teardown_appcontext
