@@ -50,13 +50,19 @@ class PolesAPI(MethodView):
         '''
         Create and add a new Pole
         '''
-        data = request.form.to_dict()
+        data = request.args
+        long_ = float(data['long'])
+        lat_ = float(data['lat'])
+        pole_number_ = str(data['pole_number'])
+        new_pole_data = {
+            'pole_number': pole_number_, 'long':long_, 'lat': lat_
+        }
         if len(data) == 0:
             return make_response(
                 jsonify({'message': 'No data input provided'}), STATUS_NO_INPUT
             )
         try:
-            pole_id = DBService.insert_data(self.db_table, **data)
+            pole_id = DBService.insert_data(self.db_table, **new_pole_data)
         except InvalidColumnsError as invalid_columns_error:
             invalid_columns_str = ', '.join(invalid_columns_error.columns)
             message = 'Unexpected data input(s): [' + invalid_columns_str + ']'
